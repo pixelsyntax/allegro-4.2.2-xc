@@ -17,7 +17,12 @@
  *      Input routines added by Ove Kaaven.
  *
  *      See readme.txt for copyright information.
+ *
+ * 	Incorporating changes by Ron Novy https://www.allegro.cc/forums/thread/596505/753496#target
+ * 	to fix all audio sounding like screaming demon on 8bit soundblasters
+ *
  */
+
 
 
 #include <string.h>
@@ -566,7 +571,7 @@ static int sb_interrupt(void)
       sb_semaphore = TRUE;
 
       ENABLE();                              /* mix some more samples */
-      _mix_some_samples(sb_buf[sb_bufnum], _dos_ds, TRUE);
+      _mix_some_samples(sb_buf[sb_bufnum], _dos_ds, sb_16bit);
       DISABLE();
 
       sb_semaphore = FALSE;
@@ -931,8 +936,8 @@ static int sb_init(int input, int voices)
    if (_mixer_init(sb_dma_mix_size, _sound_freq, sb_stereo, sb_16bit, &digi_driver->voices) != 0)
       return -1;
 
-   _mix_some_samples(sb_buf[0], _dos_ds, TRUE);
-   _mix_some_samples(sb_buf[1], _dos_ds, TRUE);
+   _mix_some_samples(sb_buf[0], _dos_ds, sb_16bit);
+   _mix_some_samples(sb_buf[1], _dos_ds, sb_16bit);
 
    _enable_irq(_sound_irq);
    _install_irq(sb_int, sb_interrupt);
@@ -1156,8 +1161,8 @@ static void sb_rec_stop(void)
    sb_16bit = (sb_dsp_ver >= 0x400);
    _sound_dma = (sb_16bit) ? sb_dma16 : sb_dma8;
 
-   _mix_some_samples(sb_buf[0], _dos_ds, TRUE);
-   _mix_some_samples(sb_buf[1], _dos_ds, TRUE);
+   _mix_some_samples(sb_buf[0], _dos_ds, sb_16bit);
+   _mix_some_samples(sb_buf[1], _dos_ds, sb_16bit);
 
    sb_start();
 }
